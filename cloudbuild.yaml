@@ -1,0 +1,17 @@
+timeout: 1800s
+substitutions:
+  _SVC_NAME: socket-example
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'asia.gcr.io/$PROJECT_ID/$_SVC_NAME:$TAG_NAME', '.']
+  id: 'build-gcr'
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'asia.gcr.io/$PROJECT_ID/$_SVC_NAME:$TAG_NAME']
+  id: 'push-gcr'
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ["set","image","deployment/$_SVC_NAME-helm","helm=asia.gcr.io/$PROJECT_ID/$_SVC_NAME:$TAG_NAME"]
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=asia-east2-b'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=maxpay-prod'
+  waitFor:
+  - 'push-gcr'

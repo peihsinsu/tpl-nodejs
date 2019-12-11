@@ -1,0 +1,12 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: demo 
+
+spec:
+#  tls:
+#    - secretName: start-arecord-us
+  backend:
+    serviceName: demo
+    servicePort: 80
+
